@@ -84,6 +84,7 @@ public class VideoClient(HttpClient http)
         return new Video(
             videoId,
             title,
+            watchPage.ContinuationToken,
             new Author(channelId, channelTitle),
             uploadDate,
             playerResponse.Description ?? "",

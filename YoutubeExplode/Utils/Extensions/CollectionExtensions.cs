@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace YoutubeExplode.Utils.Extensions;
@@ -44,6 +45,18 @@ internal static class CollectionExtensions
     {
         foreach (var i in source)
             return i;
+
+        return null;
+    }
+
+    public static T? FirstOrNull<T>(this IEnumerable<T> source, Func<T, bool> filter)
+        where T : struct
+    {
+        foreach (var i in source)
+        {
+            if (filter(i))
+                return i;
+        }
 
         return null;
     }

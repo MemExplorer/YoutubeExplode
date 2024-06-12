@@ -91,6 +91,46 @@ internal partial class VideoWatchPage(IHtmlDocument content)
             .Pipe(Json.TryParse);
 
     [Lazy]
+    private JsonElement? ContinuationCommandRoot =>
+        content
+            .GetElementsByTagName("script")
+            .Select(e => e.Text())
+            .Select(s => Regex.Match(s, @"var\s+ytInitialData\s*=\s*(\{.*\})").Groups[1].Value)
+            .FirstOrDefault(s => !string.IsNullOrWhiteSpace(s))
+            ?.NullIfWhiteSpace()
+            ?.Pipe(Json.Extract)
+            .Pipe(Json.TryParse)
+            ?.GetPropertyOrNull("contents")
+            ?.GetPropertyOrNull("twoColumnWatchNextResults")
+            ?.GetPropertyOrNull("results")
+            ?.GetPropertyOrNull("results")
+            ?.GetPropertyOrNull("contents")
+            ?.EnumerateArray()
+            .Where(x =>
+                x.GetPropertyOrNull("itemSectionRenderer")
+                    ?.GetPropertyOrNull("contents")
+                    ?.EnumerateArray()
+                    .FirstOrNull()
+                    ?.GetPropertyOrNull("continuationItemRenderer")
+                    ?.GetPropertyOrNull("continuationEndpoint")
+                    ?.GetPropertyOrNull("continuationCommand") != null
+            )
+            .First();
+
+    [Lazy]
+    public string? ContinuationToken =>
+        ContinuationCommandRoot
+            ?.GetPropertyOrNull("itemSectionRenderer")
+            ?.GetPropertyOrNull("contents")
+            ?.EnumerateArray()
+            .FirstOrNull()
+            ?.GetPropertyOrNull("continuationItemRenderer")
+            ?.GetPropertyOrNull("continuationEndpoint")
+            ?.GetPropertyOrNull("continuationCommand")
+            ?.GetPropertyOrNull("token")
+            ?.GetStringOrNull();
+
+    [Lazy]
     public PlayerResponse? PlayerResponse =>
         content
             .GetElementsByTagName("script")
