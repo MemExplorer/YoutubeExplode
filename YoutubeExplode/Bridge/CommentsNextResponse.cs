@@ -99,12 +99,12 @@ public partial class CommentsNextResponse(
     /// Gets reply count of the comment
     /// </summary>
     [Lazy]
-    public int? ReplyCount =>
+    public int ReplyCount =>
         CommentEntityPayload
             ?.GetPropertyOrNull("toolbar")
             ?.GetPropertyOrNull("replyCount")
             ?.GetStringOrNull()
-            ?.ParseIntOrNull();
+            ?.ParseIntOrNull() ?? 0;
 
     /// <summary>
     /// Check whether the comment is pinned or not

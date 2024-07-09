@@ -28,6 +28,9 @@ internal partial class VideoComments(JsonElement content)
                 x.GetPropertyOrNull("reloadContinuationItemsCommand")
                     ?.GetPropertyOrNull("continuationItems")
                     ?.EnumerateArrayOrNull()
+                ?? x.GetPropertyOrNull("appendContinuationItemsAction")
+                    ?.GetPropertyOrNull("continuationItems")
+                    ?.EnumerateArrayOrNull()
             )
             .SelectMany(x => x.GetValueOrDefault());
 
