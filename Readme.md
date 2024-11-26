@@ -78,7 +78,7 @@ var duration = video.Duration; // 00:07:20
 Every YouTube video has a number of streams available, differing in containers, video quality, bitrate, framerate, and other parameters.
 Additionally, the streams are further divided into 3 categories based on their content:
 
-- Muxed streams — contain both video and audio
+- ~~Muxed streams — contain both video and audio~~ (no longer provided by YouTube)
 - Audio-only streams — contain only audio
 - Video-only streams — contain only video
 
@@ -86,6 +86,10 @@ Additionally, the streams are further divided into 3 categories based on their c
 > Muxed streams contain both audio and video, but these streams are limited in quality (up to 720p30).
 > To download the video in the highest available quality, you will need to resolve the best audio-only and video-only streams separately and then mux them together.
 > The muxing process can be performed using FFmpeg with the help of the [**YoutubeExplode.Converter**](YoutubeExplode.Converter) package.
+
+> **Warning**:
+> Muxed streams are deprecated by YouTube and are not guaranteed to be available for every video.
+> If possible, avoid relying on them too much and instead perform muxing manually using the provided audio-only and video-only streams.
 
 You can request the manifest that lists all available streams for a particular video by calling `Videos.Streams.GetManifestAsync(...)`:
 
@@ -106,13 +110,10 @@ using YoutubeExplode.Videos.Streams;
 
 // ...
 
-// Get highest quality muxed stream
-var streamInfo = streamManifest.GetMuxedStreams().GetWithHighestVideoQuality();
-
-// ...or highest bitrate audio-only stream
+// Get the highest bitrate audio-only stream
 var streamInfo = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate();
 
-// ...or highest quality MP4 video-only stream
+// ...or the highest quality MP4 video-only stream
 var streamInfo = streamManifest
     .GetVideoOnlyStreams()
     .Where(s => s.Container == Container.Mp4)
